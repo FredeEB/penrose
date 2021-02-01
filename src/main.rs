@@ -27,8 +27,10 @@ fn main() -> penrose::Result<()> {
         .workspaces(vec!["1", "2", "3", "4", "5", "6", "7", "8", "9"])
         .gap_px(5)
         .bar_height(35)
+        .focused_border(0x3c3836 + 0x202020)
         .build()
         .unwrap();
+
     let key_bindings = gen_keybindings! {
         "M-d" => run_external!(LAUNCHER);
         "M-Return" => run_external!(TERMINAL);
@@ -55,6 +57,7 @@ fn main() -> penrose::Result<()> {
         "M-o" => run_internal!(update_main_ratio, More);
         "M-y" => run_internal!(update_main_ratio, Less);
 
+        // workspace keybinds
         "M-1" => run_internal!(focus_workspace, &penrose::Selector::Index(0));
         "M-2" => run_internal!(focus_workspace, &penrose::Selector::Index(1));
         "M-3" => run_internal!(focus_workspace, &penrose::Selector::Index(2));
