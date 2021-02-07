@@ -2,12 +2,8 @@
 extern crate penrose;
 
 use penrose::{
-    core::{
-        bindings::KeyEventHandler, config::Config, helpers::index_selectors, manager::WindowManager,
-    },
-    logging_error_handler,
-    xcb::new_xcb_backed_window_manager,
-    Backward, Forward, Less, More,
+    core::config::Config, logging_error_handler, xcb::new_xcb_backed_window_manager, Backward,
+    Forward, Less, More,
 };
 
 use simplelog::{LevelFilter, SimpleLogger};
