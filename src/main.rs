@@ -3,6 +3,7 @@ extern crate penrose;
 
 use penrose::{
     core::config::Config, logging_error_handler, xcb::new_xcb_backed_window_manager, Backward,
+    core::helpers::index_selectors,
     Forward, Less, More,
 };
 
@@ -11,7 +12,6 @@ use simplelog::{LevelFilter, SimpleLogger};
 const TERMINAL: &str = "alacritty";
 const LAUNCHER: &str = "rofi -show run";
 const BROWSER: &str = "firefox";
-const EDITOR: &str = "emacsclient -c";
 
 fn main() -> penrose::Result<()> {
     if let Err(e) = SimpleLogger::init(LevelFilter::Info, simplelog::Config::default()) {
@@ -31,7 +31,6 @@ fn main() -> penrose::Result<()> {
         "M-d" => run_external!(LAUNCHER);
         "M-Return" => run_external!(TERMINAL);
         "M-b" => run_external!(BROWSER);
-        "M-q" => run_external!(EDITOR);
 
         "M-S-e" => run_internal!(exit);
 
@@ -53,32 +52,10 @@ fn main() -> penrose::Result<()> {
         "M-o" => run_internal!(update_main_ratio, More);
         "M-y" => run_internal!(update_main_ratio, Less);
 
-        // workspace keybinds
-        "M-1" => run_internal!(focus_workspace, &penrose::Selector::Index(0));
-        "M-2" => run_internal!(focus_workspace, &penrose::Selector::Index(1));
-        "M-3" => run_internal!(focus_workspace, &penrose::Selector::Index(2));
-        "M-4" => run_internal!(focus_workspace, &penrose::Selector::Index(3));
-        "M-5" => run_internal!(focus_workspace, &penrose::Selector::Index(4));
-        "M-6" => run_internal!(focus_workspace, &penrose::Selector::Index(5));
-        "M-7" => run_internal!(focus_workspace, &penrose::Selector::Index(6));
-        "M-8" => run_internal!(focus_workspace, &penrose::Selector::Index(7));
-        "M-9" => run_internal!(focus_workspace, &penrose::Selector::Index(8));
-
-        "M-S-1" => run_internal!(client_to_workspace, &penrose::Selector::Index(0));
-        "M-S-2" => run_internal!(client_to_workspace, &penrose::Selector::Index(1));
-        "M-S-3" => run_internal!(client_to_workspace, &penrose::Selector::Index(2));
-        "M-S-4" => run_internal!(client_to_workspace, &penrose::Selector::Index(3));
-        "M-S-5" => run_internal!(client_to_workspace, &penrose::Selector::Index(4));
-        "M-S-6" => run_internal!(client_to_workspace, &penrose::Selector::Index(5));
-        "M-S-7" => run_internal!(client_to_workspace, &penrose::Selector::Index(6));
-        "M-S-8" => run_internal!(client_to_workspace, &penrose::Selector::Index(7));
-        "M-S-9" => run_internal!(client_to_workspace, &penrose::Selector::Index(8));
-
-        // TODO: Make this work, instead of the abomination above!!
-        // map: { "1", "2", "3", "4", "5", "6", "7", "8", "9"} to index_selectors(9) => {
-        //     "M-{}" => focus_workspace(REF);
-        //     "M-S-{}" => client_to_workspace(REF);
-        // };
+        refmap [ 1..10 ] in {
+            "M-{}"  => focus_workspace [ index_selectors(9) ];
+            "M-S-{}"  => client_to_workspace [ index_selectors(9) ];
+        };
     };
 
     let mut wm = new_xcb_backed_window_manager(config, vec![], logging_error_handler())?;
