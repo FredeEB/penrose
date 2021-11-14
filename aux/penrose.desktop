@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=penrose
+Comment=Penrose
+Exec=/home/bun/.cargo/bin/bun-penrose
+Type=Application
