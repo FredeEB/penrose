@@ -23,7 +23,8 @@ fn main() -> penrose::Result<()> {
         .workspaces(vec!["1", "2", "3", "4", "5", "6", "7", "8", "9"])
         .gap_px(5)
         .bar_height(35)
-        .focused_border(0x3c3836 + 0x202020)
+        .focused_border("#5c5856")
+        .unwrap()
         .build()
         .unwrap();
 
