@@ -22,6 +22,7 @@ fn main() -> penrose::Result<()> {
         .bar_height(35)
         .focused_border("#5c5856")
         .unwrap()
+        .border_px(1)
         .build()
         .unwrap();
 
