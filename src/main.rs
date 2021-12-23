@@ -1,15 +1,44 @@
 #[macro_use]
 extern crate penrose;
 
+use std::path::PathBuf;
+use std::process::Command;
+use std::fs::read_dir;
+
 use penrose::{Backward, Forward, Less, More, core::{ 
-        config::Config, helpers::index_selectors}, 
-    logging_error_handler, xcb::new_xcb_backed_window_manager};
+    hooks::Hook, config::Config, helpers::index_selectors, xconnection::XConn}, 
+    logging_error_handler, xcb::{XcbConnection, new_xcb_backed_window_manager}, WindowManager};
 
 use simplelog::{LevelFilter, SimpleLogger};
 
 const TERMINAL: &str = "alacritty";
 const LAUNCHER: &str = "rofi -show run";
 const BROWSER: &str = "firefox";
+
+struct StartupScript {
+    dir: PathBuf
+}
+
+impl StartupScript {
+    fn new(s: impl Into<PathBuf>) -> Self {
+        Self { dir: s.into() }
+    }
+}
+
+impl<X> Hook<X> for StartupScript where X: XConn {
+    fn startup(&mut self, _: &mut WindowManager<X>) -> penrose::Result<()> {
+        let dir = read_dir(&self.dir)?;
+        dir.for_each(|path| {
+            if let Ok(path) = path {
+                match Command::new(path.path()).status() {
+                    Ok(_) => {},
+                    Err(e) => println!("Error: {}", e),
+                };
+            }
+        });
+        Ok(())
+    }
+}
 
 fn main() -> penrose::Result<()> {
     if let Err(e) = SimpleLogger::init(LevelFilter::Info, simplelog::Config::default()) {
@@ -56,6 +85,14 @@ fn main() -> penrose::Result<()> {
         };
     };
 
-    let mut wm = new_xcb_backed_window_manager(config, vec![], logging_error_handler())?;
+    let mut user_scripts = PathBuf::from(std::env::var("HOME").expect("HOME Var not set"));
+    user_scripts.push(".config/penrose");
+
+    let hooks: Vec<Box<dyn Hook<XcbConnection> + 'static>> = vec![
+        Box::new(StartupScript::new("/usr/share/penrose")),
+        Box::new(StartupScript::new(user_scripts)),
+    ];
+
+    let mut wm = new_xcb_backed_window_manager(config, hooks, logging_error_handler())?;
     wm.grab_keys_and_run(key_bindings, map! {})
 }

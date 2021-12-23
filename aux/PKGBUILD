@@ -13,7 +13,7 @@ source=(
 )
 sha256sums=(
     SKIP
-    4e949e0eee8ed2a3393a1fdca39e4cbb2c0d17f7ace61276bee42247f63537eb
+    e780be4750cc1bb510c15c1ee4dea38fe539ba8a4fe3616f9819b071789d7eaa
     038a1b0110dfb4bdda14449ddd0ed35a5f4c08001092f5fb21bdf8781ff46d1f
 )
 
@@ -29,6 +29,6 @@ build() {
 
 package() {
     install -Dm0755 -t "$pkgdir/usr/local/bin" "target/release/bun-penrose"
-    install -Dm0755 -t "$pkgdir/usr/local/bin" "autostart.sh"
+    install -Dm0755 -t "$pkgdir/usr/share/penrose" "autostart.sh"
     install -Dm0644 -t "$pkgdir/usr/share/xsessions" "penrose.desktop" 
 }
