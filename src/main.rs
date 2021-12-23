@@ -1,11 +1,9 @@
 #[macro_use]
 extern crate penrose;
 
-use penrose::{
-    core::config::Config, logging_error_handler, xcb::new_xcb_backed_window_manager, Backward,
-    core::helpers::index_selectors,
-    Forward, Less, More,
-};
+use penrose::{Backward, Forward, Less, More, core::{ 
+        config::Config, helpers::index_selectors}, 
+    logging_error_handler, xcb::new_xcb_backed_window_manager};
 
 use simplelog::{LevelFilter, SimpleLogger};
 
@@ -21,7 +19,6 @@ fn main() -> penrose::Result<()> {
     let config = Config::default()
         .builder()
         .workspaces(vec!["1", "2", "3", "4", "5", "6", "7", "8", "9"])
-        .gap_px(5)
         .bar_height(35)
         .focused_border("#5c5856")
         .unwrap()
@@ -34,7 +31,6 @@ fn main() -> penrose::Result<()> {
         "M-b" => run_external!(BROWSER);
 
         "M-S-e" => run_internal!(exit);
-
 
         // TODO: Make this work without indices!
         "M-S-h" => run_internal!(client_to_screen, &penrose::Selector::Index(0));
