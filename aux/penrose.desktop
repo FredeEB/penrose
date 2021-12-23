@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=penrose
-Comment=Penrose
-Exec=/usr/local/bin/bun-penrose
+Name=bun-penrose
+Comment="Silly implementation of a WM using penrose"
+Exec=bun-penrose
 Type=Application
