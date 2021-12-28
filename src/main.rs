@@ -6,14 +6,18 @@ use std::process::Command;
 use std::fs::read_dir;
 
 use penrose::{Backward, Forward, Less, More, core::{ 
-    hooks::Hook, config::Config, helpers::index_selectors, xconnection::XConn}, 
-    logging_error_handler, xcb::{XcbConnection, new_xcb_backed_window_manager}, WindowManager};
+    hooks::Hook, config::Config, helpers::index_selectors, xconnection::XConn},
+    logging_error_handler, 
+    xcb::{XcbConnection, new_xcb_backed_window_manager, XcbDraw}, 
+    WindowManager, draw::{Color, dwm_bar, TextStyle}
+};
 
 use simplelog::{LevelFilter, SimpleLogger};
 
 const TERMINAL: &str = "alacritty";
 const LAUNCHER: &str = "rofi -show run";
 const BROWSER: &str = "firefox";
+const FONT: &str = "Iosevka Nerd Font";
 
 struct StartupScript {
     dir: PathBuf
@@ -48,12 +52,26 @@ fn main() -> penrose::Result<()> {
     let config = Config::default()
         .builder()
         .workspaces(vec!["1", "2", "3", "4", "5", "6", "7", "8", "9"])
-        .bar_height(35)
         .focused_border("#5c5856")
         .unwrap()
-        .border_px(1)
+        .border_px(0)
         .build()
         .unwrap();
+
+    let bar = dwm_bar(
+        XcbDraw::new()?, 
+        18, // height
+        &TextStyle{
+            font: FONT.to_string(),
+            point_size: 12,
+            fg: Color::try_from("#f8f8f2")?,
+            bg: Some(Color::try_from("#282a36")?),
+            padding: (0.0, 0.0),
+        }, 
+        Color::try_from("#282a36")?,
+        Color::try_from("#f8f8f2")?,
+        config.workspaces().clone()
+        )?;
 
     let key_bindings = gen_keybindings! {
         "M-d" => run_external!(LAUNCHER);
@@ -89,6 +107,7 @@ fn main() -> penrose::Result<()> {
     user_scripts.push(".config/penrose");
 
     let hooks: Vec<Box<dyn Hook<XcbConnection> + 'static>> = vec![
+        Box::new(bar),
         Box::new(StartupScript::new("/usr/share/penrose")),
         Box::new(StartupScript::new(user_scripts)),
     ];
