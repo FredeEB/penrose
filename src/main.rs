@@ -51,7 +51,8 @@ fn main() -> penrose::Result<()> {
 
     let config = Config::default()
         .builder()
-        .workspaces(vec!["1", "2", "3", "4", "5", "6", "7", "8", "9"])
+        .workspaces(vec!["1", "2", "3", "4"])
+        .floating_classes(vec!["floating", "rofi", "dunst"])
         .focused_border("#5c5856")
         .unwrap()
         .border_px(0)
@@ -74,7 +75,7 @@ fn main() -> penrose::Result<()> {
         )?;
 
     let key_bindings = gen_keybindings! {
-        "M-d" => run_external!(LAUNCHER);
+        "M-r" => run_external!(LAUNCHER);
         "M-Return" => run_external!(TERMINAL);
         "M-b" => run_external!(BROWSER);
 
@@ -89,7 +90,7 @@ fn main() -> penrose::Result<()> {
         "M-l" => run_internal!(cycle_screen, Forward);
         "M-S-j" => run_internal!(drag_client, Forward);
         "M-S-k" => run_internal!(drag_client, Backward);
-        "M-S-f" => run_internal!(toggle_client_fullscreen, &penrose::Selector::Focused);
+        "M-g" => run_internal!(toggle_client_fullscreen, &penrose::Selector::Focused);
         "M-S-q" => run_internal!(kill_client);
 
         "M-u" => run_internal!(update_max_main, Less);
@@ -97,7 +98,7 @@ fn main() -> penrose::Result<()> {
         "M-o" => run_internal!(update_main_ratio, More);
         "M-y" => run_internal!(update_main_ratio, Less);
 
-        map: { "1", "2", "3", "4", "5", "6", "7", "8", "9" } to index_selectors(9) => {
+        map: { "a", "s", "d", "f" } to index_selectors(4) => {
             "M-{}" => focus_workspace (REF);
             "M-S-{}" => client_to_workspace (REF);
         };
